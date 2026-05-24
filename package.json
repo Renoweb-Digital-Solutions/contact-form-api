@@ -1,0 +1,34 @@
+{
+  "name": "contact-form-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Renoweb-Digital-Solutions/contact-form-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Renoweb-Digital-Solutions/contact-form-api/issues"
+  },
+  "homepage": "https://github.com/Renoweb-Digital-Solutions/contact-form-api#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.2.0",
+    "nodemailer": "^8.0.8",
+    "nodemon": "^3.1.14"
+  }
+}
