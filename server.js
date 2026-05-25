@@ -12,6 +12,7 @@ const rateLimit = require("express-rate-limit");
 const { body, validationResult } = require("express-validator");
 const { Resend } = require("resend");
 const { createClient } = require("@supabase/supabase-js");
+const ws = require("ws");
 
 // ── Config ──────────────────────────────────────────────────
 
@@ -35,7 +36,11 @@ const ALLOWED_SERVICES = [
 
 // ── Supabase client ─────────────────────────────────────────
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  realtime: {
+    transport: ws,
+  },
+});
 
 // ── Resend client ───────────────────────────────────────────
 
