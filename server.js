@@ -245,7 +245,7 @@ app.post(
         // 1. Send email
         resend.emails.send({
           from: `${fullName} <growth@renowebhq.com>`,
-          to: "samaresh.renoweb.webdevintern@gmail.com", // for testing now
+          to: "renowebhq@gmail.com", // for testing now
           reply_to: email,
           subject: `New enquiry from ${fullName} — ${service}`,
           html: buildEmailHtml({ fullName, email, company, phone, service, projectDetails }),
