@@ -10,7 +10,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const { body, validationResult } = require("express-validator");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const { createClient } = require("@supabase/supabase-js");
 
 // ── Config ──────────────────────────────────────────────────
@@ -18,8 +18,7 @@ const { createClient } = require("@supabase/supabase-js");
 const PORT = process.env.PORT || 3000;
 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "";
-const GMAIL_USER = process.env.GMAIL_USER;
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
@@ -38,15 +37,9 @@ const ALLOWED_SERVICES = [
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ── Nodemailer transporter ──────────────────────────────────
+// ── Resend client ───────────────────────────────────────────
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: GMAIL_USER,
-    pass: GMAIL_APP_PASSWORD,
-  },
-});
+const resend = new Resend(RESEND_API_KEY);
 
 // ── Express app ─────────────────────────────────────────────
 
@@ -248,10 +241,10 @@ app.post(
       // ── Run email + Supabase insert in parallel ──
       const [emailResult, dbResult] = await Promise.allSettled([
         // 1. Send email
-        transporter.sendMail({
-          from: `"Renoweb Contact Form" <${GMAIL_USER}>`,
-          to: GMAIL_USER,
-          replyTo: email,
+        resend.emails.send({
+          from: `${fullName} <growth@renowebhq.com>`,
+          to: "samaresh.renoweb.webdevintern@gmail.com", // for testing now
+          reply_to: email,
           subject: `New enquiry from ${fullName} — ${service}`,
           html: buildEmailHtml({ fullName, email, company, phone, service, projectDetails }),
         }),
@@ -263,6 +256,8 @@ app.post(
       // Log failures server-side — never expose details to client
       if (emailResult.status === "rejected") {
         console.error("[EMAIL ERROR]", emailResult.reason);
+      } else if (emailResult.value?.error) {
+        console.error("[EMAIL ERROR]", emailResult.value.error);
       }
       if (dbResult.status === "rejected") {
         console.error("[SUPABASE ERROR]", dbResult.reason);
@@ -271,7 +266,7 @@ app.post(
       }
 
       // If both failed, return 500
-      const emailOk = emailResult.status === "fulfilled";
+      const emailOk = emailResult.status === "fulfilled" && !emailResult.value?.error;
       const dbOk =
         dbResult.status === "fulfilled" && !dbResult.value?.error;
 
