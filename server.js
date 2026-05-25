@@ -24,14 +24,11 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
 const ALLOWED_SERVICES = [
-  "Web Design",
-  "Web Development",
-  "SEO",
-  "Branding",
-  "Digital Marketing",
-  "UI/UX Design",
-  "E-Commerce",
-  "Other",
+  "lead-gen",
+  "seo",
+  "community",
+  "performance",
+  "multiple",
 ];
 
 // ── Supabase client ─────────────────────────────────────────
@@ -215,7 +212,7 @@ app.post(
   async (req, res) => {
     try {
       // ── Honeypot: silently discard bot submissions ──
-      if (req.body.website) {
+      if (req.body._hp_url) {
         return res.json({
           success: true,
           message: "Your message has been sent successfully!",
